@@ -14,8 +14,8 @@ toggle_stats = 'toggle_stats' not in st.session_state or st.session_state.toggle
 st.session_state.toggle_stats = toggle_stats
 
 # Palette neutre
-box_colors = ['#A9A9A9', '#B0C4DE', '#D3D3D3', '#C0C0C0', '#DCDCDC', '#E0E0E0']
-icons = ['👥', '👨', '👩', '🎂', '💰', '🛍️']
+box_colors = ['#bfcc94', '#edb458', '#548c2f', '#ffb100', '#ffebc6', '#ffd449']
+icons = ['👥', '♂️', '♀️', '🕰️', '💰', '🛒']
 
 # Titre de la page
 st.title("🧭 Analyse Exploratoire des Données (EDA)")
@@ -24,11 +24,11 @@ def run():
     col_btn1, col_btn2 = st.columns(2)
 
     with col_btn1:
-        if st.button("🗂️ Aperçu de la base", key="apercu_btn"):
+        if st.button("Aperçu de la base", key="apercu_btn"):
             st.session_state.toggle_apercu = not st.session_state.toggle_apercu
 
     with col_btn2:
-        if st.button("📊 Statistiques descriptives", key="stats_btn"):
+        if st.button("Statistiques descriptives", key="stats_btn"):
             st.session_state.toggle_stats = not st.session_state.toggle_stats
 
     # Aperçu de la base
@@ -46,10 +46,10 @@ def run():
 
         stats_data = [
             ("Total Clients", total_clients, icons[0], box_colors[0]),
-            ("Hommes", round(100 * len(hommes) / total_clients, 1), icons[1], box_colors[1]),
-            ("Femmes", round(100 * len(femmes) / total_clients, 1), icons[2], box_colors[2]),
+            ("Hommes(%)", round(100 * len(hommes) / total_clients, 1), icons[1], box_colors[1]),
+            ("Femmes(%)", round(100 * len(femmes) / total_clients, 1), icons[2], box_colors[2]),
             ("Âge Moyen", round(df["Age"].mean(), 1), icons[3], box_colors[3]),
-            ("Revenu Moyen", round(df["Annual Income (k$)"].mean(), 1), icons[4], box_colors[4]),
+            ("Revenu Moyen(k$)", round(df["Annual Income (k$)"].mean(), 1), icons[4], box_colors[4]),
             ("Score Moyen", round(df["Spending Score (1-100)"].mean(), 1), icons[5], box_colors[5])
         ]
 
@@ -57,9 +57,10 @@ def run():
         for idx, (label, value, icon, color) in enumerate(stats_data):
             with col_metrics[idx % 3]:
                 st.markdown(f"""
-                <div style='background-color:{color}; padding: 15px; border-radius: 5px; text-align: center;'>
-                    <h4>{icon} {label}</h4>
-                    <h2>{value}</h2>
+                <div style='background-color:{color}; margin:8px; padding: 15px; border-radius: 5px; text-align: center;'>
+                    <h5>{icon}</h5>
+                    <h6 style="font-weight: bold;">{label}</h6>
+                    <h4 style="font-weight: bold;">{value}</h4>
                 </div>
                 """, unsafe_allow_html=True)
 
