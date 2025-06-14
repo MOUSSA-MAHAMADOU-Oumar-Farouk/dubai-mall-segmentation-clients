@@ -25,13 +25,12 @@ def check_api_health() -> bool:
     except requests.exceptions.RequestException:
         return False
 
-def predict_single_customer(age: int, income: float, score: int, gender: str) -> Dict[str, Any]:
+def predict_single_customer(age: int, income: float, score: int) -> Dict[str, Any]:
     """Prédiction pour un client unique - Adapté à votre API"""
     data = {
-        "gender": gender,
-        "age": float(age),
-        "annual_income_k": float(income),
-        "spending_score": float(score)
+        "Age": float(age),
+        "Annual_Income": float(income),
+        "Spending_Score": float(score)
     }
     
     try:
@@ -48,10 +47,9 @@ def predict_batch_customers(df: pd.DataFrame) -> Dict[str, Any]:
     results = []
     for _, row in df.iterrows():
         data = {
-            "gender": str(row["Gender"]),
-            "age": float(row["Age"]),
-            "annual_income_k": float(row["Annual Income (k$)"]),
-            "spending_score": float(row["Spending Score (1-100)"])
+            "Age": float(row["Age"]),
+            "Annual_Income": float(row["Annual Income (k$)"]),
+            "Spending_Score": float(row["Spending Score (1-100)"])
         }
         try:
             response = requests.post(PREDICT_URL, json=data, timeout=5)
@@ -124,12 +122,6 @@ def run():
             col1, col2, col3 = st.columns(3)
             
             with col1:
-                gender = st.selectbox(
-                    "Genre",
-                    ["Male", "Female"],
-                    index=0,
-                    help="Genre du client"
-                )
                 age = st.number_input(
                     "Âge", 
                     min_value=18, 
@@ -160,7 +152,6 @@ def run():
             # Aperçu des données
             st.subheader("Aperçu des données")
             preview_data = {
-                "Gender": [gender],
                 "Age": [age],
                 "Annual Income (k$)": [income],
                 "Spending Score": [score]
@@ -172,7 +163,7 @@ def run():
             
             if submitted:
                 with st.spinner("Prédiction en cours..."):
-                    result = predict_single_customer(age, income, score, gender)
+                    result = predict_single_customer(age, income, score)
                     display_prediction_result(result)
     
     else:
@@ -182,7 +173,7 @@ def run():
         fichier = st.file_uploader(
             "📁 Uploader le fichier", 
             type=["xlsx", "csv"],
-            help="Fichier Excel ou CSV avec colonnes: Gender, Age, Annual Income (k$), Spending Score (1-100)"
+            help="Fichier Excel ou CSV avec colonnes: Age, Annual Income (k$), Spending Score (1-100)"
         )
         
         if fichier is not None:
@@ -196,12 +187,12 @@ def run():
                 st.success(f"Fichier chargé: {len(df)} lignes")
                 
                 # Vérification des colonnes requises
-                required_columns = ['Gender', 'Age', 'Annual Income (k$)', 'Spending Score (1-100)']
+                required_columns = ['Age', 'Annual Income (k$)', 'Spending Score (1-100)']
                 missing_columns = [col for col in required_columns if col not in df.columns]
                 
                 if missing_columns:
                     st.error(f"Colonnes manquantes: {', '.join(missing_columns)}")
-                    st.info("Colonnes requises: Gender, Age, Annual Income (k$), Spending Score (1-100)")
+                    st.info("Colonnes requises: Age, Annual Income (k$), Spending Score (1-100)")
                 else:
                     # Affichage de l'aperçu des données
                     st.subheader("Aperçu des données")
