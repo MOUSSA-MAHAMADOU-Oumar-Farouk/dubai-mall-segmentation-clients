@@ -26,12 +26,13 @@ def check_api_health() -> bool:
     except requests.exceptions.RequestException:
         return False
 
-def predict_single_customer(age: int, income: float, score: int) -> Dict[str, Any]:
+def predict_single_customer(age: int, income: float, score: int, gender: str) -> Dict[str, Any]:
     """Prédiction pour un client unique - Adapté à votre API"""
     data = {
-        "Age": float(age),
-        "Annual_Income": float(income),
-        "Spending_Score": float(score)
+        "gender": gender,
+        "age": float(age),
+        "annual_income_k": float(income),
+        "spending_score": float(score)
     }
     
     try:
@@ -48,9 +49,10 @@ def predict_batch_customers(df: pd.DataFrame) -> Dict[str, Any]:
     results = []
     for _, row in df.iterrows():
         data = {
-            "Age": float(row["Age"]),
-            "Annual_Income": float(row["Annual Income (k$)"]),
-            "Spending_Score": float(row["Spending Score (1-100)"])
+            "gender": str(row["Gender"]),
+            "age": float(row["Age"]),
+            "annual_income_k": float(row["Annual Income (k$)"]),
+            "spending_score": float(row["Spending Score (1-100)"])
         }
         try:
             response = requests.post(PREDICT_URL, json=data, timeout=5)
@@ -77,26 +79,31 @@ def display_prediction_result(result: Dict[str, Any]):
         # Affichage principal
         st.success("✅ Prédiction réussie !")
         
+        # Récupération du cluster et du persona
+        cluster_id = data.get("cluster", "Inconnu")
+        persona = PERSONAS.get(cluster_id, "Persona inconnu")
+        
         # Métriques principales
         col1, col2 = st.columns(2)
         with col1:
-            st.metric("Cluster ID", data["cluster"])
+            st.metric("Cluster ID", cluster_id)
         with col2:
-            st.metric("Persona", data["persona"])
+            st.metric("Persona", persona)
         
         # Informations détaillées
-        st.subheader("📊 Caractéristiques Client")
-        features = data["features"]
-        st.info(f"**Âge:** {features['Age']} ans")
-        st.info(f"**Revenu annuel:** {features['Annual_Income']} k$")
-        st.info(f"**Score de dépenses:** {features['Spending_Score']}")
+        #st.subheader("📊 Caractéristiques Client")
+        #features = data.get("features", {})
+        #st.info(f"**Genre:** {features.get('gender', 'N/A')}")
+        #st.info(f"**Âge:** {features.get('age', 'N/A')} ans")
+        #st.info(f"**Revenu annuel:** {features.get('annual_income_k', 'N/A')} k$")
+        #st.info(f"**Score de dépenses:** {features.get('spending_score', 'N/A')}")
         
     else:
-        st.error(f"❌ Erreur: {result['error']}")
+        st.error(f"Erreur: {result['error']}")
 
 def run():
     
-    st.title("🎯 Prédiction de Segmentation Client")
+    st.title("Prédiction de segmentation client")
     st.markdown("---")
     
     # Vérification de l'état de l'API
@@ -104,23 +111,23 @@ def run():
         api_status = check_api_health()
     
     if not api_status:
-        st.error("❌ L'API n'est pas disponible. Veuillez démarrer le serveur FastAPI.")
+        st.error("L'API n'est pas disponible. Veuillez démarrer le serveur FastAPI.")
         st.code("uvicorn api.api:app --reload --host 0.0.0.0 --port 8000")
         st.stop()
     
-    st.success("✅ API connectée avec succès")
+    st.success("API connectée avec succès")
     
     # Sidebar avec informations sur les personas
-    with st.sidebar:
-        st.header("📋 Personas Disponibles")
-        for cluster_id, persona_name in PERSONAS.items():
-            with st.expander(f"Cluster {cluster_id}: {persona_name}"):
-                st.write(f"**Description:** Segment de clients caractéristiques")
-                st.write(f"**Stratégie:** Approche personnalisée selon le profil")
+    #with st.sidebar:
+     #   st.header("📋 Personas Disponibles")
+      #  for cluster_id, persona_name in PERSONAS.items():
+       #     with st.expander(f"Cluster {cluster_id}: {persona_name}"):
+        #        st.write(f"**Description:** Segment de clients caractéristiques")
+         #       st.write(f"**Stratégie:** Approche personnalisée selon le profil")
     
     # Interface principale
     choix = st.radio(
-        "🔧 Choisir le type de prédiction", 
+        "Choisir le type de prédiction", 
         ["Client unique", "Plusieurs clients (Fichier)"],
         horizontal=True
     )
@@ -128,15 +135,21 @@ def run():
     st.markdown("---")
     
     if choix == "Client unique":
-        st.subheader("👤 Prédiction pour un Client Unique")
+        st.subheader("Prédiction pour un client unique")
         
         # Formulaire de saisie
         with st.form("single_prediction"):
             col1, col2, col3 = st.columns(3)
             
             with col1:
+                gender = st.selectbox(
+                    "Genre",
+                    ["Male", "Female"],
+                    index=0,
+                    help="Genre du client"
+                )
                 age = st.number_input(
-                    "🎂 Âge", 
+                    "Âge", 
                     min_value=18, 
                     max_value=100, 
                     value=35,
@@ -145,7 +158,7 @@ def run():
             
             with col2:
                 income = st.number_input(
-                    "💰 Revenu annuel (k$)", 
+                    "Revenu annuel (k$)", 
                     min_value=0.0, 
                     max_value=200.0,
                     value=65.0,
@@ -155,7 +168,7 @@ def run():
             
             with col3:
                 score = st.number_input(
-                    "🛒 Score de dépenses (1-100)", 
+                    "Score de dépenses (1-100)", 
                     min_value=1, 
                     max_value=100, 
                     value=75,
@@ -163,30 +176,31 @@ def run():
                 )
             
             # Aperçu des données
-            st.subheader("📋 Aperçu des Données")
+            st.subheader("Aperçu des données")
             preview_data = {
-                "Âge": [age],
-                "Revenu annuel (k$)": [income],
-                "Score de dépenses": [score]
+                "Gender": [gender],
+                "Age": [age],
+                "Annual Income (k$)": [income],
+                "Spending Score": [score]
             }
             st.dataframe(pd.DataFrame(preview_data), use_container_width=True)
             
             # Bouton de prédiction
-            submitted = st.form_submit_button("🔮 Prédire le Segment", type="primary")
+            submitted = st.form_submit_button("Classer le client", type="primary")
             
             if submitted:
                 with st.spinner("Prédiction en cours..."):
-                    result = predict_single_customer(age, income, score)
+                    result = predict_single_customer(age, income, score, gender)
                     display_prediction_result(result)
     
     else:
-        st.subheader("📊 Prédiction pour Plusieurs Clients")
+        st.subheader("Prédiction pour plusieurs clients")
         
         # Upload de fichier
         fichier = st.file_uploader(
             "📁 Uploader le fichier", 
             type=["xlsx", "csv"],
-            help="Fichier Excel ou CSV avec colonnes: Age, Annual Income (k$), Spending Score (1-100)"
+            help="Fichier Excel ou CSV avec colonnes: Gender, Age, Annual Income (k$), Spending Score (1-100)"
         )
         
         if fichier is not None:
@@ -197,15 +211,15 @@ def run():
                 else:
                     df = pd.read_csv(fichier)
                 
-                st.success(f"✅ Fichier chargé: {len(df)} lignes")
+                st.success(f"Fichier chargé: {len(df)} lignes")
                 
                 # Vérification des colonnes requises
-                required_columns = ['Age', 'Annual Income (k$)', 'Spending Score (1-100)']
+                required_columns = ['Gender', 'Age', 'Annual Income (k$)', 'Spending Score (1-100)']
                 missing_columns = [col for col in required_columns if col not in df.columns]
                 
                 if missing_columns:
-                    st.error(f"❌ Colonnes manquantes: {', '.join(missing_columns)}")
-                    st.info("📋 Colonnes requises: Age, Annual Income (k$), Spending Score (1-100)")
+                    st.error(f"Colonnes manquantes: {', '.join(missing_columns)}")
+                    st.info("Colonnes requises: Gender, Age, Annual Income (k$), Spending Score (1-100)")
                 else:
                     # Aperçu des données
                     st.subheader("👀 Aperçu des Données")
@@ -223,7 +237,7 @@ def run():
                         st.metric("Score moyen", f"{df['Spending Score (1-100)'].mean():.1f}")
                     
                     # Bouton de prédiction batch
-                    if st.button("🚀 Lancer les Prédictions", type="primary"):
+                    if st.button("Lancer les prédictions", type="primary"):
                         progress_bar = st.progress(0)
                         status_text = st.empty()
                         
@@ -235,24 +249,33 @@ def run():
                         progress_bar.progress(100)
                         
                         if result["success"]:
-                            st.success("✅ Prédictions terminées avec succès !")
+                            st.success("Prédictions terminées avec succès !")
                             api_results = result["results"]
                             
                             # Ajout des résultats au DataFrame
-                            df["Cluster"] = [r.get("cluster", "Erreur") for r in api_results]
-                            df["Persona"] = [PERSONAS.get(r.get("cluster", -1), "Inconnu") for r in api_results]
+                            df_results = df.copy()
+                            clusters = []
+                            personas = []
+                            
+                            for r in api_results:
+                                cluster_id = r.get("cluster", -1)
+                                clusters.append(cluster_id)
+                                personas.append(PERSONAS.get(cluster_id, "Inconnu"))
+                            
+                            df_results["Cluster"] = clusters
+                            df_results["Persona"] = personas
                             
                             # Affichage des résultats
-                            st.subheader("📈 Résultats des Prédictions")
-                            st.dataframe(df, use_container_width=True)
+                            st.subheader("Résultats des Prédictions")
+                            st.dataframe(df_results, use_container_width=True)
                             
                             # Statistiques des clusters
-                            st.subheader("📊 Répartition par Cluster")
-                            cluster_counts = df["Persona"].value_counts()
+                            st.subheader("Répartition par cluster")
+                            cluster_counts = df_results["Persona"].value_counts()
                             st.bar_chart(cluster_counts)
                             
                             # Option de téléchargement
-                            csv = df.to_csv(index=False)
+                            csv = df_results.to_csv(index=False)
                             st.download_button(
                                 label="💾 Télécharger les résultats (CSV)",
                                 data=csv,
@@ -261,14 +284,13 @@ def run():
                             )
                             
                         else:
-                            st.error(f"❌ Erreur lors des prédictions: {result.get('error', 'Erreur inconnue')}")
+                            st.error(f"Erreur lors des prédictions: {result.get('error', 'Erreur inconnue')}")
                         
                         status_text.empty()
                         progress_bar.empty()
                         
             except Exception as e:
-                st.error(f"❌ Erreur lors de la lecture du fichier: {str(e)}")
+                st.error(f"Erreur lors de la lecture du fichier: {str(e)}")
 
-#if __name__ == "__main__":
- #   run()
-
+if __name__ == "__main__":
+    run()
