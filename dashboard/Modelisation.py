@@ -15,11 +15,11 @@ def run():
     scaler = StandardScaler()
     X_scaled = scaler.fit_transform(X)
 
-    # Clustering KMeans
+    # Clustering avec KMeans
     kmeans = KMeans(n_clusters=6, n_init=10, random_state=42)
     df["Cluster"] = kmeans.fit_predict(X_scaled)
 
-    # Personas
+    # Dictionnaire des personas
     personas_dict = {
         0: "Seniors stables",
         1: "Jeunes actifs équilibrés",
@@ -38,7 +38,7 @@ def run():
     """)
 
     # Scores
-    st.subheader("📊 Indicateurs de performance du modèle")
+    st.subheader("Indicateurs de performance du modèle")
 
     col1, col2, col3, col4 = st.columns(4)
     with col1:
@@ -54,7 +54,7 @@ def run():
         st.markdown("<div style='background-color:#ede7f6; padding:10px; border-radius:5px; text-align:center;'>"
                     "<strong>Calinski-Harabasz</strong><br><h3>135.1</h3></div>", unsafe_allow_html=True)
 
-    # Visualisations interactives
+    # Visualisation des clusters
     st.subheader("🌀 Visualisation des clusters")
 
     if "view" not in st.session_state:
@@ -97,7 +97,7 @@ def run():
     personas["Effectif"] = df.groupby("Cluster").size().values
     st.dataframe(personas)
 
-    # Répartition par genre
+    # Répartition selon le genre
     st.subheader("🚻 Répartition Hommes/Femmes par cluster")
     fig, ax = plt.subplots(figsize=(8, 6))
     gender_counts = df.groupby(["ClusterLabel", "Gender"]).size().reset_index(name='count')

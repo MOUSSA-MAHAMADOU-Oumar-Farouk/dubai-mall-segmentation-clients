@@ -1,30 +1,19 @@
-# Manipulation des données
 import pandas as pd
 import numpy as np
 import joblib
-
-# Visualisation
 import matplotlib.pyplot as plt
 import matplotlib as mpl
 import seaborn as sns
 from mpl_toolkits.mplot3d import Axes3D
 from plotly.offline import download_plotlyjs, init_notebook_mode, iplot
 import plotly.graph_objs as go
-
-# Prétraitement des données
 from sklearn.preprocessing import StandardScaler, MinMaxScaler, RobustScaler, normalize, LabelEncoder
 from sklearn.compose import ColumnTransformer, make_column_transformer
 from sklearn.pipeline import Pipeline, make_pipeline
-
-# Réduction de dimensionnalité
 from sklearn.decomposition import PCA
 from sklearn.manifold import TSNE
-
-# Méthodes de clustering
 from sklearn.cluster import KMeans, DBSCAN, MeanShift, estimate_bandwidth, AgglomerativeClustering
 from kmodes.kprototypes import KPrototypes
-
-# Évaluation des clusters
 from sklearn.metrics import (
     silhouette_score,
     davies_bouldin_score,
@@ -34,38 +23,29 @@ from sklearn.metrics import (
     adjusted_mutual_info_score,
     pairwise_distances
 )
-
-# Visualisation des clusters (Yellowbrick)
 from yellowbrick.cluster import KElbowVisualizer, SilhouetteVisualizer, InterclusterDistance
-
-# Clustering hiérarchique (SciPy)
 import scipy.cluster.hierarchy as sch
 from scipy.cluster.hierarchy import dendrogram, linkage
 import scipy.stats as stats
 from scipy.stats import mannwhitneyu
-
-# Divers
 import warnings
 from time import time
 from itertools import product
 import matplotlib.pyplot as plt
 import scipy.cluster.hierarchy as sch
-import matplotlib.pyplot as plt
 import seaborn as sns
 import dill
-#from setuptools import setup
-# Chemin vers le fichier (ajustez le nom si nécessaire)
+
+
 file_path = "data/Mall_Customers.csv"
 
 # Chargement des données
 df = pd.read_csv(file_path)
 
-# Afficher les 5 premières lignes
+# I.1 Aperçu de la base
 df.head()
 
-## I.2 Informations d'ordre générales sur la base
-
-# Affichage des infos générales sur la base
+# I.2 Informations d'ordre générales sur la base
 print(df.info())
 
 # Vérification de presence de valeurs manquantes
@@ -76,13 +56,12 @@ df.describe().round(4)
 
 # I.3 Analyse descriptive univariée
 
-###   I.3.1  Avec la variable sexe (Gender)
+## I.3.1  Avec la variable sexe (Gender)
 
-
-# Nombre d'occurrences de chaque modalité dans la variable 'Gender'
+## Nombre d'occurrences de chaque modalité dans la variable 'Gender'
 gender_counts = df['Gender'].value_counts()
 
-# Créer un diagramme circulaire en forme de donut
+## Créer un diagramme circulaire en forme de donut
 plt.figure(figsize=(8, 6))
 plt.pie(gender_counts,
         autopct='%1.1f%%',
@@ -97,9 +76,7 @@ plt.legend(gender_counts.index, loc='center left', bbox_to_anchor=(1, 0.5), titl
 plt.show()
 
 
-###   I.3.2   Avec la variable "Age"
-
-
+# I.3.2   Avec la variable "Age"
 # Construction de l'histogramme pour la variable "Age"
 plt.figure(figsize=(10, 6))
 sns.set_style("white")
@@ -108,7 +85,7 @@ plt.xlabel('Âge')
 plt.title('Distribution de l\'âge')
 plt.show()
 
-### I.3.3 Avec la variable revenu annuel (Annual Income)"""
+#I.3.3 Avec la variable revenu annuel (Annual Income)
 
 # Construction de l'histogramme pour la variable "Age"
 plt.figure(figsize=(10, 6))
@@ -118,7 +95,7 @@ plt.xlabel('Annual Income (k$)')
 plt.title('Distribution du revenu annuel')
 plt.show()
 
-### I.3.3 Avec la variable score de dépenses (Annual Income)"""
+# I.3.3 Avec la variable score de dépenses (Annual Income)
 
 # Histogramme pour la variable 'Spending Score (1-100)'
 plt.figure(figsize=(10, 6))
@@ -127,7 +104,7 @@ plt.xlabel('Spending Score (1-100)')
 plt.title('Distribution de la variable Spending Score')
 plt.show()
 
-### I.3.4 Histogrammes et courbes de densité"""
+# I.3.4 Histogrammes et courbes de densité
 
 #  Histogrammes et courbes de densité
 plt.figure(figsize=(15, 5))
@@ -207,8 +184,6 @@ plt.show()
 
 
 ## I.5 Standardisation des données
-
-from sklearn.preprocessing import StandardScaler
 scaler = StandardScaler()
 
 cols_to_scale = ['Age', 'Annual Income (k$)', 'Spending Score (1-100)']
@@ -234,7 +209,7 @@ plt.xlabel("Indices des Clients")
 plt.ylabel("Distance Euclidienne")
 plt.show()
 
-### II.1.2 Dendrogram pour representer 20 clusters"""
+### II.1.2 Dendrogram pour representer 20 clusters
 
 from scipy.cluster.hierarchy import dendrogram, linkage
 import matplotlib.pyplot as plt
@@ -242,9 +217,8 @@ Z = linkage(df_scaled[['Age','Annual Income (k$)', 'Spending Score (1-100)']], '
 dn = dendrogram(Z, truncate_mode='lastp', p=20) # show last 10 clusters
 plt.show()
 
+
 ### II.1.2 Visualisation des clusters à travers la reduction de dimension PCA
-
-
 # Clustering hiérarchique
 clustering = AgglomerativeClustering(n_clusters=6)  # choisis le nombre de clusters selon ton cas
 cluster_labels = clustering.fit_predict(df_scaled)
@@ -266,7 +240,7 @@ plt.show()
 ### II.1.3 Visualisation des clusters à travers TSNE
 
 # Clustering hiérarchique
-clustering = AgglomerativeClustering(n_clusters=6)  # choisis le nombre de clusters selon ton cas
+clustering = AgglomerativeClustering(n_clusters=6)  # choisir le nombre de clusters selon ton cas
 cluster_labels = clustering.fit_predict(df_scaled)
 
 # t-SNE pour visualisation 2D
@@ -307,13 +281,13 @@ silhouette = silhouette_score(df_scaled, cluster_labels)
 davies_bouldin = davies_bouldin_score(df_scaled, cluster_labels)
 calinski_harabasz = calinski_harabasz_score(df_scaled, cluster_labels)
 
-# 4. Affichage clair
+# 4. Affichage
 print(" Évaluation du clustering hiérarchique")
 print(f"- Silhouette Score        : {silhouette:.3f} (proche de 1 = bien)")
 print(f"- Davies-Bouldin Index    : {davies_bouldin:.3f} (proche de 0 = bien)")
 print(f"- Calinski-Harabasz Score : {calinski_harabasz:.3f} (plus élevé = bien)")
 
-## II.2. DBSCAN"""
+## II.2. DBSCAN
 
 # 2. DBSCAN
 dbscan = DBSCAN(eps=0.5, min_samples=5)  # Ajuste eps si besoin
@@ -326,7 +300,7 @@ n_noise = list(cluster_labels).count(-1)
 print(f"Nombre de clusters trouvés : {n_clusters}")
 print(f"Nombre de points considérés comme bruit : {n_noise}")
 
-## II.2.1 Visualisation des clusters à travers la reduction de dimension PCA"""
+## II.2.1 Visualisation des clusters à travers la reduction de dimension PCA
 
 # 5. Visualisation (option : PCA pour projeter)
 from sklearn.decomposition import PCA
@@ -374,7 +348,7 @@ if n_clusters > 1:
 else:
     print(" DBSCAN a détecté moins de 2 clusters. Évaluation non applicable.")
 
-## II.3 L'algorithme du K-means"""
+## II.3 L'algorithme du K-means
 
 warnings.filterwarnings("ignore", category=UserWarning)
 # 2. K-Means clustering
@@ -424,11 +398,6 @@ plt.show()
 
 warnings.filterwarnings("ignore", category=UserWarning)
 
-import matplotlib.pyplot as plt
-from sklearn.cluster import KMeans
-from sklearn.metrics import silhouette_score
-from sklearn.preprocessing import StandardScaler
-
 # 2. Paramètres de la boucle
 k_values = range(2, 11)
 silhouette_scores = []
@@ -464,7 +433,8 @@ print(f"- Silhouette Score        : {silhouette:.3f}")
 print(f"- Davies-Bouldin Index    : {davies_bouldin:.3f}")
 print(f"- Calinski-Harabasz Score : {calinski_harabasz:.3f}")
 
-#  III. Optimisation des hyperparamètres du meilleurs modèle </span>
+
+#  III. Optimisation des hyperparamètres du meilleurs modèle
 
 
 # 1. Préparation des données
@@ -478,7 +448,6 @@ best_k = 6  # Remplace par ton meilleur k si différent
 init_options = ['k-means++', 'random']
 n_init_options = [10,20]
 max_iter_options = [300]
-#algorithm_options = ['lloyd', 'elkan']
 algorithm_options = ['elkan']
 
 # 4. Stocker les résultats
@@ -518,7 +487,6 @@ print(results_df.head(10).to_string(index=False))
 # IV. Analyse des personnas
 
 ## IV.1 Formation et analyse des clusters
-
 
 # 1. Sélection des variables
 X = df[['Age', 'Annual Income (k$)', 'Spending Score (1-100)']]
@@ -646,26 +614,8 @@ ax.legend()
 plt.tight_layout()
 plt.show()
 
-# VI. Enregistrement du meilleur modèle </span>"""
-
-# Spécifie le nom du fichier de sauvegarde
-#filename = 'models/K_Mmeans_model.dill'
-
-# Ouvre le fichier en mode écriture binaire et enregistre le modèle
-#with open(filename, 'wb') as f:
- #   dill.dump(kmeans, f)
-#model_data = {
- #   "model": kmeans,
-  #  "scaler": scaler,
-   # "features": ["Age", "Annual Income (k$)", "Spending Score (1-100)"]
-#}
-
-#joblib.dump(model_data, "models/kmeans_mod.pkl")
-
 joblib.dump({
     "model": kmeans,
     "scaler": scaler,
     "features": ["Age", "Annual Income (k$)", "Spending Score (1-100)"]
 }, "models/kmeans_model.pkl")
-
-#print(f"Modèle KMeans sauvegardé avec succès dans '{filename}'")

@@ -1,8 +1,6 @@
 import streamlit as st
 
 def run():
-    #st.set_page_config(layout="wide")
-
     st.title("🛍️ Segmentation Avancée des Clients du Dubai Mall")
 
     st.markdown("""
@@ -17,7 +15,6 @@ def run():
 
     st.markdown("--- ")
 
-    # Section Objectifs
     st.header("Objectifs du projet")
     st.markdown("""
     Notre mission est de développer un modèle de segmentation client robuste et pertinent. 
@@ -27,10 +24,8 @@ def run():
     *   **Optimiser** les stratégies de marketing pour une meilleure efficacité.
     *   **Améliorer** significativement la satisfaction et la fidélisation des clients.
     """)
-
     st.markdown("--- ")
 
-    # Section Étapes Clés
     st.header("Étapes clés de notre approche")
     
     col1, col2, col3, col4 = st.columns(4)
@@ -60,7 +55,7 @@ def run():
     with col3:
         st.markdown("""
             <div style="border-left: 6px solid #2196F3; background-color: #E8F4FD; height: 380px; padding: 1rem; border-radius: 5px;">
-                <h6>3. Déploiement de l'API de prédiction</h6>
+                <h6>3. Construction de l'API de prédiction</h6>
                 <p style="text-align: justify;">
                     Mise en place d'une interface de programmation permettant de prédire le segment d'un nouveau client, 
                     facilitant l'intégration dans les systèmes existants.

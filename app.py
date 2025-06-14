@@ -4,10 +4,6 @@ import time
 import os
 from dashboard import Accueil, EDA, Modelisation, Prediction
 
-#st.set_page_config(page_title="Segmentation des clients du Dubai Mall")
-#layout="wide", 
-# Lancer l'API FastAPI automatiquement
-#subprocess.Popen(["python", "-m", "uvicorn", "api.main:app", "--reload", "--port", "8000"])
 subprocess.Popen([
     "python", "-m", "uvicorn", 
     "api.api:app", 
@@ -16,7 +12,6 @@ subprocess.Popen([
 ])
 
 
-# App Streamlit
 PAGES = {
     "Accueil": Accueil,
     "Analyse exploratoire": EDA,
@@ -24,11 +19,10 @@ PAGES = {
     "Prédiction": Prediction
 }
 
-# Initialiser la session state pour la page courante
+# Vérifier si la clé de session pour la page courante existe, sinon l'initialiser
 if 'current_page' not in st.session_state:
     st.session_state.current_page = "Accueil"
 
-# CSS pour styliser les boutons avec fond bleu
 st.markdown("""
 <style>
 .stButton > button {
@@ -59,17 +53,10 @@ st.markdown("""
 
 st.sidebar.title("Navigation")
 
-# Créer les boutons de navigation
+# Afficher les boutons pour chaque page
 for page_name in PAGES.keys():
     if st.sidebar.button(page_name, key=f"btn_{page_name}"):
         st.session_state.current_page = page_name
 
 # Exécuter la page courante
 PAGES[st.session_state.current_page].run()
-
-#selection = st.sidebar.radio("Aller à", list(PAGES.keys()))
-
-#if selection != st.session_state.current_page:
-#    st.session_state.current_page = selection
-
-#PAGES[st.session_state.current_page].run()

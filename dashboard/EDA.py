@@ -13,12 +13,12 @@ st.session_state.toggle_apercu = toggle_apercu
 toggle_stats = 'toggle_stats' not in st.session_state or st.session_state.toggle_stats
 st.session_state.toggle_stats = toggle_stats
 
-# Palette neutre
+# Couleurs et icônes pour les box
 box_colors = ['#bfcc94', '#edb458', '#548c2f', '#ffb100', '#ffebc6', '#ffd449']
 icons = ['👥', '♂️', '♀️', '🕰️', '💰', '🛒']
 
 # Titre de la page
-st.title("🧭 Analyse Exploratoire des Données (EDA)")
+st.title("Analyse Exploratoire des Données (EDA)")
 def run():
     # Boutons toggle pour afficher/masquer
     col_btn1, col_btn2 = st.columns(2)
@@ -37,7 +37,7 @@ def run():
         st.subheader("Aperçu de la base")
         st.dataframe(df_display)
 
-    # Statistiques dans des box
+    # Statistiques descriptives
     if st.session_state.toggle_stats:
         st.subheader("Indicateurs statistiques clés")
         total_clients = len(df)
@@ -64,7 +64,8 @@ def run():
                 </div>
                 """, unsafe_allow_html=True)
 
-    # Onglets
+    # Onglets pour les analyses
+    st.markdown("---")
     onglet = st.tabs(["Analyse univariée", "Analyse bivariée", "Analyse multivariée"])
 
     # Analyse univariée

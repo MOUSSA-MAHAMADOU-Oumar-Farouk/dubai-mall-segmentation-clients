@@ -4,11 +4,10 @@ import requests
 import json
 from typing import Dict, Any
 
-# Configuration de l'API - Modifié pour correspondre à votre implémentation
 API_BASE_URL = "http://127.0.0.1:8000"
 PREDICT_URL = f"{API_BASE_URL}/predict"
 
-# Dictionnaire des personas (copié de votre API)
+# Dictionnaire des personas
 PERSONAS = {
     0: "Seniors stables",
     1: "Jeunes actifs équilibrés",
@@ -72,11 +71,11 @@ def predict_batch_customers(df: pd.DataFrame) -> Dict[str, Any]:
     return {"success": True, "results": results}
 
 def display_prediction_result(result: Dict[str, Any]):
-    """Afficher les résultats de prédiction de manière formatée - Adapté"""
+    """Afficher les résultats de prédiction de manière formatée"""
     if result["success"]:
         data = result["data"]
         
-        # Affichage principal
+        # Affichage du message de succès
         st.success("✅ Prédiction réussie !")
         
         # Récupération du cluster et du persona
@@ -88,16 +87,7 @@ def display_prediction_result(result: Dict[str, Any]):
         with col1:
             st.metric("Cluster ID", cluster_id)
         with col2:
-            st.metric("Persona", persona)
-        
-        # Informations détaillées
-        #st.subheader("📊 Caractéristiques Client")
-        #features = data.get("features", {})
-        #st.info(f"**Genre:** {features.get('gender', 'N/A')}")
-        #st.info(f"**Âge:** {features.get('age', 'N/A')} ans")
-        #st.info(f"**Revenu annuel:** {features.get('annual_income_k', 'N/A')} k$")
-        #st.info(f"**Score de dépenses:** {features.get('spending_score', 'N/A')}")
-        
+            st.metric("Persona", persona)  
     else:
         st.error(f"Erreur: {result['error']}")
 
@@ -117,18 +107,10 @@ def run():
     
     st.success("API connectée avec succès")
     
-    # Sidebar avec informations sur les personas
-    #with st.sidebar:
-     #   st.header("📋 Personas Disponibles")
-      #  for cluster_id, persona_name in PERSONAS.items():
-       #     with st.expander(f"Cluster {cluster_id}: {persona_name}"):
-        #        st.write(f"**Description:** Segment de clients caractéristiques")
-         #       st.write(f"**Stratégie:** Approche personnalisée selon le profil")
-    
-    # Interface principale
+    # Choix du type de prédiction
     choix = st.radio(
         "Choisir le type de prédiction", 
-        ["Client unique", "Plusieurs clients (Fichier)"],
+        ["Client unique", "Plusieurs clients (fichier à joindre)"],
         horizontal=True
     )
     
@@ -205,7 +187,7 @@ def run():
         
         if fichier is not None:
             try:
-                # Lecture du fichier
+                # Chargement du fichier
                 if fichier.name.endswith('.xlsx'):
                     df = pd.read_excel(fichier)
                 else:
@@ -221,11 +203,11 @@ def run():
                     st.error(f"Colonnes manquantes: {', '.join(missing_columns)}")
                     st.info("Colonnes requises: Gender, Age, Annual Income (k$), Spending Score (1-100)")
                 else:
-                    # Aperçu des données
-                    st.subheader("👀 Aperçu des Données")
+                    # Affichage de l'aperçu des données
+                    st.subheader("Aperçu des données")
                     st.dataframe(df.head(), use_container_width=True)
                     
-                    # Statistiques rapides
+                    # Statistiques descriptives
                     col1, col2, col3, col4 = st.columns(4)
                     with col1:
                         st.metric("Nombre de clients", len(df))
@@ -236,7 +218,7 @@ def run():
                     with col4:
                         st.metric("Score moyen", f"{df['Spending Score (1-100)'].mean():.1f}")
                     
-                    # Bouton de prédiction batch
+                    # Bouton de prédiction
                     if st.button("Lancer les prédictions", type="primary"):
                         progress_bar = st.progress(0)
                         status_text = st.empty()
@@ -252,7 +234,7 @@ def run():
                             st.success("Prédictions terminées avec succès !")
                             api_results = result["results"]
                             
-                            # Ajout des résultats au DataFrame
+                            # Ajout des résultats au dataframe
                             df_results = df.copy()
                             clusters = []
                             personas = []
@@ -266,7 +248,7 @@ def run():
                             df_results["Persona"] = personas
                             
                             # Affichage des résultats
-                            st.subheader("Résultats des Prédictions")
+                            st.subheader("Résultats des prédictions")
                             st.dataframe(df_results, use_container_width=True)
                             
                             # Statistiques des clusters
@@ -277,7 +259,7 @@ def run():
                             # Option de téléchargement
                             csv = df_results.to_csv(index=False)
                             st.download_button(
-                                label="💾 Télécharger les résultats (CSV)",
+                                label="💾 Télécharger les résultats",
                                 data=csv,
                                 file_name="predictions_clients.csv",
                                 mime="text/csv"
