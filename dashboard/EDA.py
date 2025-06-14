@@ -108,14 +108,12 @@ def run():
     with onglet[2]:
         st.subheader("Analyse multivariée")
 
-        st.markdown("#### Matrice de corrélation")
+        st.markdown("### Matrice de corrélation")
         corr_matrix = df[["Age", "Annual Income (k$)", "Spending Score (1-100)"]].corr()
         fig, ax = plt.subplots()
         sns.heatmap(corr_matrix, annot=True, cmap='coolwarm', fmt='.2f', linewidths=0.5, ax=ax)
         st.pyplot(fig)
 
-        st.markdown("#### Pairplot")
+        st.markdown("### Pairplot")
         fig_pair = sns.pairplot(df[["Age", "Annual Income (k$)", "Spending Score (1-100)"]])
         st.pyplot(fig_pair)
-
-

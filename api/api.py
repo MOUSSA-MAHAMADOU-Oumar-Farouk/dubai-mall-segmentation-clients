@@ -39,7 +39,7 @@ async def predict_cluster(customer: CustomerData):
     # Appliquer le scaling
     scaled_data = scaler.transform(input_data)
     
-    # Faire la prédiction
+    # Prédire le cluster
     cluster = model.predict(scaled_data)[0]
     
     # Récupérer le nom du persona

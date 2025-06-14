@@ -91,7 +91,7 @@ def run():
         ax.set_title("KMeans - Vue t-SNE")
         st.pyplot(fig)
 
-    # Analyse des personas
+    #
     st.subheader("👥 Analyse des personas")
     personas = df.groupby(["Cluster", "ClusterLabel"])[features].mean().round(1).reset_index()
     personas["Effectif"] = df.groupby("Cluster").size().values

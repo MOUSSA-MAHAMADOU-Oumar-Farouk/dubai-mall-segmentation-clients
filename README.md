@@ -1,6 +1,3 @@
-# dubai-mall-segmentation-clients
-Segmentation des clients du Dubai Mall via le clustering pour améliorer le ciblage marketing et l’expérience client. Le repo contient les scripts Python, notebooks, dashboard/API, et une présentation détaillant la méthodologie et les résultats du projet.
-
 # Projet de Segmentation Client du Dubai Mall
 
 ## Vue d'ensemble du projet
@@ -81,14 +78,14 @@ Le tableau de bord s'ouvrira automatiquement dans votre navigateur web. Si ce n'
 │   └── Prediction.py        # Page de prédiction client
 ├── data/                    # Contient les données brutes
 │   └── Mall_Customers.csv   # Jeu de données des clients
-├── models/                  # Contient les modèles entraînés
+├── models/                  # Contient le modèle retenu
 │   └── kmeans_model.pkl     # Modèle K-Means sérialisé
 ├── scripts/                 # Scripts de développement et d'entraînement
 │   ├── projet_ml_2025.py    # Script principal de développement ML (EDA, modélisation, évaluation)
-│   └── train_model.py       # Script d'entraînement du modèle (non fourni, mais implicite)
+│   ├── Notebook_ML_2025.ipynb #Notebook du projet
 ├── app.py                   # Point d'entrée principal de l'application Streamlit
 ├── requirements.txt         # Liste des dépendances Python
-├── 
+├── Segmentation_client_du_Dubai_Mall.pptx # Présentation du projet
 └── README.md                # Ce fichier
 ```
 
@@ -106,7 +103,7 @@ Le tableau de bord s'ouvrira automatiquement dans votre navigateur web. Si ce n'
 ## Auteurs
 
 *   **MOUSSA MAHAMADOU OUMAR FAROUK**
-*   **MANDO DEBORA**
+*   **W. ABIJA DEBORAH MANDO**
 *   **ZAONGO INOUSSA**
 *   **ZOUMANA ZERBO**
 

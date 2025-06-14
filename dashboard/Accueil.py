@@ -14,7 +14,7 @@ def run():
     """, unsafe_allow_html=True)
 
     st.markdown("--- ")
-
+    
     st.header("Objectifs du projet")
     st.markdown("""
     Notre mission est de développer un modèle de segmentation client robuste et pertinent. 

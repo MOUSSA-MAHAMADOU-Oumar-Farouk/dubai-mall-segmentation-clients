@@ -53,7 +53,7 @@ st.markdown("""
 
 st.sidebar.title("Navigation")
 
-# Afficher les boutons pour chaque page
+# Affichage les boutons pour chaque page
 for page_name in PAGES.keys():
     if st.sidebar.button(page_name, key=f"btn_{page_name}"):
         st.session_state.current_page = page_name

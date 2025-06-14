@@ -247,7 +247,7 @@ def run():
                             df_results["Cluster"] = clusters
                             df_results["Persona"] = personas
                             
-                            # Affichage des résultats
+                            # Résultats
                             st.subheader("Résultats des prédictions")
                             st.dataframe(df_results, use_container_width=True)
                             
