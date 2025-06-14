@@ -1,0 +1,16 @@
+pandas
+numpy
+scikit-learn
+matplotlib
+seaborn
+joblib
+fastapi
+pydantic
+uvicorn
+streamlit
+requests
+scipy
+plotly
+kmodes
+yellowbrick
+dill

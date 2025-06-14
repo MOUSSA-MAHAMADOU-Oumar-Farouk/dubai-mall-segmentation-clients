@@ -8,6 +8,13 @@ from dashboard import Accueil, EDA, Modelisation, Prediction
 #layout="wide", 
 # Lancer l'API FastAPI automatiquement
 #subprocess.Popen(["python", "-m", "uvicorn", "api.main:app", "--reload", "--port", "8000"])
+subprocess.Popen([
+    "python", "-m", "uvicorn", 
+    "api.api:app", 
+    "--reload",
+    "--port", "8000"
+])
+
 
 # App Streamlit
 PAGES = {
